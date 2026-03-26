@@ -1,0 +1,125 @@
+{
+  "name": "Messenger AI Auto Reply Bot",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "webhook",
+      "name": "Messenger Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300],
+      "webhookId": "messenger-auto-reply"
+    },
+    {
+      "parameters": {
+        "functionCode": "const msg = $json.body.message?.text || \"\";\nreturn [{ json: { text: msg.toLowerCase() } }];"
+      },
+      "id": "clean-text",
+      "name": "Clean Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"text\"]}}",
+              "operation": "contains",
+              "value2": "price"
+            },
+            {
+              "value1": "={{$json[\"text\"]}}",
+              "operation": "contains",
+              "value2": "product"
+            }
+          ]
+        }
+      },
+      "id": "if-product",
+      "name": "Check Product Query",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { reply: \"📦 Product Name: Premium T-Shirt\\n💰 Price: 500 BDT\\n📄 Details: High quality cotton, available sizes M/L/XL\" } }];"
+      },
+      "id": "product-reply",
+      "name": "Product Info Reply",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [800, 200]
+    },
+    {
+      "parameters": {
+        "operation": "chat",
+        "model": "gpt-4o-mini",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful business assistant. Reply to customer queries professionally."
+          },
+          {
+            "role": "user",
+            "content": "={{$json[\"text\"]}}"
+          }
+        ]
+      },
+      "id": "ai-chat",
+      "name": "AI Chat Response",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { reply: $json.choices[0].message.content } }];"
+      },
+      "id": "format-ai",
+      "name": "Format AI Reply",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1000, 400]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/me/messages",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"recipient\": {\"id\": \"{{$json.body.sender.id}}\"},\n  \"message\": {\"text\": \"{{$json.reply}}\"}\n}"
+      },
+      "id": "send-message",
+      "name": "Send Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1200, 300]
+    }
+  ],
+  "connections": {
+    "Messenger Webhook": {
+      "main": [[{ "node": "Clean Message", "type": "main", "index": 0 }]]
+    },
+    "Clean Message": {
+      "main": [[{ "node": "Check Product Query", "type": "main", "index": 0 }]]
+    },
+    "Check Product Query": {
+      "main": [
+        [{ "node": "Product Info Reply", "type": "main", "index": 0 }],
+        [{ "node": "AI Chat Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Product Info Reply": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    },
+    "AI Chat Response": {
+      "main": [[{ "node": "Format AI Reply", "type": "main", "index": 0 }]]
+    },
+    "Format AI Reply": {
+      "main": [[{ "node": "Send Reply", "type": "main", "index": 0 }]]
+    }
+  }
+}
