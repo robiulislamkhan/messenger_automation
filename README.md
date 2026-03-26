@@ -46,3 +46,18 @@ An AI-powered Facebook Messenger automation system built with n8n that handles c
 ### 1. Install n8n
 ```bash
 npm install n8n -g
+
+```
+---
+### 2. Clone Repository
+```bash
+git clone https://github.com/your-username/messenger-ai-automation-bot.git
+cd messenger-ai-automation-bot
+```
+## 3. Import Workflow
+  -Open n8n
+  -Click Import Workflow
+  -Upload workflow.json
+## 4. Setup Credentials
+  -Facebook Page Access Token
+  -OpenAI API Key
