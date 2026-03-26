@@ -46,5 +46,3 @@ An AI-powered Facebook Messenger automation system built with n8n that handles c
 ### 1. Install n8n
 ```bash
 npm install n8n -g
-
--``` → closes the code block  
