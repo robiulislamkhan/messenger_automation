@@ -47,12 +47,4 @@ An AI-powered Facebook Messenger automation system built with n8n that handles c
 ```bash
 npm install n8n -g
 
----
-
-### 2. Import Workflow
-``` Open n8n
-Import workflow.json
-### 3. Setup Credentials
-``` Facebook Page Access Token
-OpenAI API Key
-### 4. Activate Workflow
+-``` → closes the code block  
