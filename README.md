@@ -6,7 +6,7 @@ An AI-powered Facebook Messenger automation system built with n8n that handles c
 
 ## 📸 Workflow Preview
 
-![Workflow](images/workflow-preview1.png)
+![Workflow](workflow-preview1.png)
 
 ---
 
